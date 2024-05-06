@@ -21,7 +21,7 @@
 # pylint: disable=wrong-import-position,import-error
 import sys
 import gi
-import pkg_resources
+import importlib.resources
 import subprocess
 import threading
 import typing
@@ -43,8 +43,10 @@ class RemoteSupportGUI(Gtk.Application):
 
         # load objects
         self.builder: Gtk.Builder = Gtk.Builder()
-        self.builder.add_from_file(pkg_resources.resource_filename(
-            __name__, 'remote_gui.glade'))
+        glade_ref = importlib.resources.files(
+            __name__).joinpath('remote_gui.glade')
+        with importlib.resources.as_file(glade_ref) as path:
+            self.builder.add_from_file(str(path))
 
         # ask window
         self.ask_window: AskWindow = AskWindow(
